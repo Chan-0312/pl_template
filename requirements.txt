@@ -1,0 +1,7 @@
+torch
+torchvision
+opencv-python
+pydantic_settings
+pytorch_lightning>=2.4.0
+tensorboard
+tensorboardX
