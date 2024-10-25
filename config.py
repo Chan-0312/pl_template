@@ -10,17 +10,18 @@ class TrainerSettings(BaseSettings):
     num_workers: int = 4                    # 训练数据加载线程数
     lr: float = 1e-3                        # 学习率
     model_name: str = 'your_net'            # 模型名称
-    dataset_name: str = 'your_data'         # 数据集名称
+    dataset_name: str = 'your_data2'         # 数据集名称
     
 
-    # 模型参数
-    hidden_units: int = 64  # Changed `hid` to `hidden_units`
-    input_channels: int = 1024  # Changed `in_channel` to `input_channels`
-    layer_count: int = 5  # Changed `layer_num` to `layer_count`
+    # 模型参数：写自己模型需要的参数
+    in_features: int = 1024 
+    out_features: int = 1 
+    hid_features: int = 128
 
-    # 数据集参数
-    class_num: int = 9
-    input_size: tuple[int, int] = (224, 224)
+    # 数据集参数: 写自己数据集需要的参数
+    class_num: int = 2
+    input_len: int = 1024
+    data_amount: int = 100
 
     # 训练参数
     log_dir: str = './logs'                             # 日志目录路径
@@ -32,13 +33,13 @@ class TrainerSettings(BaseSettings):
     monitor_mode: Literal['max', 'min'] = 'min'         # 监控指标的模式, 也是越大越好，还是越小越好
     use_early_stopping: bool = False                    # 是否使用早停
     early_stopping_patience: int = 10                   # 早停的忍耐次数
-    early_stopping_min_delta: float = 0.0001            # 早停的阈值
+    early_stopping_min_delta: float = 0.001             # 早停的阈值
     # 如果在 patience 轮次内，监控指标的改进小于 min_delta，则会触发早停。
     
     # 优化器 & 调度器
     optimizer: Literal['adam', 'sgd', 'rmsprop', 'adamw']  = 'sgd'
     weight_decay: float = 1e-5
-    lr_scheduler: Literal['step', 'cosine', None] = 'cosine'
+    lr_scheduler: Literal['step', 'cosine', 'None'] = 'None'
     lr_decay_steps: int = 20
     lr_decay_rate: float = 0.5
     lr_decay_min_lr: float = 1e-5
@@ -55,11 +56,12 @@ class TrainerSettings(BaseSettings):
         # Dynamically add fields from Pydantic to argparse
         for field_name, field_type in cls.__annotations__.items():
             default_value = getattr(cls, field_name, None)
-            if isinstance(default_value, bool):
-                # Special handling for boolean flags
-                parser.add_argument(f'--{field_name}', action='store_true' if not default_value else 'store_false')
-            else:
+            if isinstance(field_type, type) and field_type in {str, int, float, bool}:
                 parser.add_argument(f'--{field_name}', type=field_type, default=default_value)
+            elif hasattr(field_type, '__origin__') and field_type.__origin__ is Literal:
+                # Extract literal options and create choices for argparse
+                choices = [value for value in field_type.__args__]
+                parser.add_argument(f'--{field_name}', choices=choices, default=default_value)
         
         # Parse command-line args and override settings
         args = parser.parse_args()

@@ -16,6 +16,7 @@ def main(args:TrainerSettings):
     # 设置随机种子
     logger.info(f'设置随机种子为：{args.seed}')
     logger.info(f'训练模型名称: {args.model_name}')
+    logger.info(f'使用数据集：{args.dataset_name}')
     pl.seed_everything(args.seed, verbose=False)
     
     # 判断是否要加载预训练模型
@@ -41,10 +42,12 @@ def main(args:TrainerSettings):
             patience=args.early_stopping_patience,
             min_delta=args.early_stopping_min_delta
         ))
+    
+    filename = 'checkpoint-{epoch:02d}-{%s:.3f}'%args.monitor_metric
     callbacks.append(plc.ModelCheckpoint(
         monitor=args.monitor_metric,
         mode=args.monitor_mode,
-        filename='checkpoint-{epoch:02d}-{val_loss:.3f}',
+        filename=filename,
         save_top_k=3,       # 只保存最好的3个模型  
         save_last=True      # 保留最后一个epoch的模型
     ))

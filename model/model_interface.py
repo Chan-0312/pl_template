@@ -51,7 +51,7 @@ class MInterface(pl.LightningModule):
         else:
             raise ValueError('Invalid optimizer type!')
 
-        if self.hparams.lr_scheduler is None:
+        if self.hparams.lr_scheduler is None or self.hparams.lr_scheduler == 'None':
             return optimizer
         else:
             if self.hparams.lr_scheduler == 'step':
