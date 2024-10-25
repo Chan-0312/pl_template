@@ -31,10 +31,12 @@ root/
 ### 1. 创建数据集
 - 在 `data` 文件夹中创建一个新的数据集文件，例如 `your_data1.py`。
 - 您可以选择继承 `torch.utils.data.Dataset`（例如在 `your_data1.py` 中），或创建 `torch.utils.data.TensorDataset`（例如在 `your_data2.py` 中）。
+- 确保数据集的名称与数据集对象名称一致，例如：`your_data1.py`的数据集对象必须是`YourData1`
 
 ### 2. 定义模型
 - 在 `model` 文件夹中创建一个新的模型文件，例如 `your_net1.py`。
 - 在此文件中实现模型架构。确保包含 `common_step` 方法，以计算损失并记录指标，以便进行反向传播。
+- 确保数模型的名称与模型对象名称一致，例如：`your_net.py`的模型对象必须是`YourNet`，并想必须包含`common_step`方法。
 
 ### 3. 配置参数
 - 编辑 `config.py` 文件以设置模型参数和数据集配置。通过这种方式可以更容易地管理和调整训练过程中的参数。
