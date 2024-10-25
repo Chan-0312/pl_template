@@ -16,13 +16,7 @@ class MInterface(pl.LightningModule):
         return self.model(img)
 
     def training_step(self, batch, batch_idx):
-        loss = self.common_step(self.model, batch, self.log, self.hparams, mode='train')
-        
-        # 记录lr
-        lr = self.optimizers().param_groups[0]['lr']
-        self.log('lr', lr, prog_bar=True, on_step=False, on_epoch=True)
-          
-        return loss
+        return self.common_step(self.model, batch, self.log, self.hparams, mode='train')
     def validation_step(self, batch, batch_idx):
         return self.common_step(self.model, batch, self.log, self.hparams, mode='val')
 
